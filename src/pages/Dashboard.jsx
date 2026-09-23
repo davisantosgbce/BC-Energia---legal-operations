@@ -49,8 +49,8 @@ export default function Dashboard() {
         <KpiCard icon={IconDoc} iconColor="#6fa8f5" value={stats ? stats.abertas : "–"} label="Demandas abertas" />
         <KpiCard icon={IconClock} iconColor="#3ecbc0" value={stats ? stats.recebidas30d : "–"} label="Recebidas (30d)" />
         <KpiCard icon={IconCheck} iconColor="#3ecbc0" value={stats ? stats.concluidas30d : "–"} label="Concluídas (30d)" />
-        <KpiCard icon={IconSlaClock} iconColor="#3ecbc0" value="—" valueColor="#3ecbc0" label="Dentro do SLA (em breve)" />
-        <KpiCard icon={IconWarning} iconColor="#e8536b" value="—" valueColor="#e8536b" label="SLA vencido (em breve)" />
+        <KpiCard icon={IconSlaClock} iconColor="#3ecbc0" value={stats ? stats.dentroDoSla : "–"} valueColor="#3ecbc0" label="Dentro do SLA" />
+        <KpiCard icon={IconWarning} iconColor="#e8536b" value={stats ? stats.slaVencido : "–"} valueColor="#e8536b" label="SLA vencido" />
       </div>
 
       <div className="grid grid-cols-[1.3fr_1fr] gap-3.5 mb-3.5">

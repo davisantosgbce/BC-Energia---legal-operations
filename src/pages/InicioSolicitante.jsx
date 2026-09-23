@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../components/Layout.jsx";
 import { KpiCard, StatusDot } from "../components/Kpi.jsx";
 import { IconDoc, IconClock, IconWarning, IconCheck, IconPlus } from "../components/icons.jsx";
 import { minhasSolicitacoes, statusColor } from "../data/mock.js";
+import { getKpisSolicitante, getUsuarioAtualDeTeste } from "../lib/api.js";
 
 const donutSegments = [
   { color: "#6fa8f5", value: 4, dash: 43.4, offset: 0 },
@@ -11,11 +13,21 @@ const donutSegments = [
 ];
 
 export default function InicioSolicitante() {
+  const [kpis, setKpis] = useState(null);
+  const [usuario, setUsuario] = useState(null);
+
+  useEffect(() => {
+    getUsuarioAtualDeTeste().then((u) => {
+      setUsuario(u);
+      return getKpisSolicitante(u.id).then(setKpis);
+    });
+  }, []);
+
   return (
-    <Layout profile="solicitante" user={{ nome: "Ana Ribeiro", cargo: "Financeiro", iniciais: "AR" }}>
+    <Layout profile="solicitante" user={{ nome: usuario?.nome ?? "—", cargo: usuario?.area ?? "", iniciais: "" }}>
       <div className="flex items-start justify-between mb-7">
         <div>
-          <h1 className="m-0 mb-1 text-[23px] text-white font-semibold">Olá, Ana 👋</h1>
+          <h1 className="m-0 mb-1 text-[23px] text-white font-semibold">Olá, {usuario?.nome?.split(" ")[0] ?? ""} 👋</h1>
           <p className="m-0 text-[13px] text-muted">Aqui está o andamento das suas solicitações ao Jurídico.</p>
         </div>
         <Link to="/nova-solicitacao" className="btn-primary">
@@ -25,10 +37,10 @@ export default function InicioSolicitante() {
       </div>
 
       <div className="grid grid-cols-4 gap-3.5 mb-5">
-        <KpiCard icon={IconDoc} iconColor="#6fa8f5" value={9} label="Total de solicitações" />
-        <KpiCard icon={IconClock} iconColor="#f0b429" value={4} label="Em andamento" />
-        <KpiCard icon={IconWarning} iconColor="#e8536b" value={1} label="Aguardando você" />
-        <KpiCard icon={IconCheck} iconColor="#3ecbc0" value={3} label="Concluídas (30d)" />
+        <KpiCard icon={IconDoc} iconColor="#6fa8f5" value={kpis ? kpis.total : "–"} label="Total de solicitações" />
+        <KpiCard icon={IconClock} iconColor="#f0b429" value={kpis ? kpis.emAndamento : "–"} label="Em andamento" />
+        <KpiCard icon={IconWarning} iconColor="#e8536b" value={kpis ? kpis.aguardandoVoce : "–"} label="Aguardando você" />
+        <KpiCard icon={IconCheck} iconColor="#3ecbc0" value={kpis ? kpis.concluidas30d : "–"} label="Concluídas (30d)" />
       </div>
 
       <div className="grid grid-cols-[1.7fr_1fr] gap-3.5">
