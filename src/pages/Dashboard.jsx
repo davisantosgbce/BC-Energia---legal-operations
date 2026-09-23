@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import Layout from "../components/Layout.jsx";
 import { KpiCard, StatusDot } from "../components/Kpi.jsx";
 import { IconDoc, IconClock, IconCheck, IconWarning } from "../components/icons.jsx";
-import { categoriaBreakdown, cargaResponsavel, vencimentos } from "../data/mock.js";
+import { cargaResponsavel, vencimentos } from "../data/mock.js";
+import { getDashboardStats } from "../lib/api.js";
 
 function IconSlaClock(props) {
   return (
@@ -13,6 +15,17 @@ function IconSlaClock(props) {
 }
 
 export default function Dashboard() {
+  const [stats, setStats] = useState(null);
+  const [erro, setErro] = useState(null);
+
+  useEffect(() => {
+    getDashboardStats()
+      .then(setStats)
+      .catch((e) => setErro(e.message));
+  }, []);
+
+  const categoriaBreakdown = stats?.categoriaBreakdown ?? [];
+
   return (
     <Layout profile="juridico" user={{ nome: "Marcos Vidal", cargo: "Gestor", iniciais: "MV" }} topbarPlaceholder="Buscar demandas, solicitantes...">
       <div className="flex items-baseline justify-between mb-[22px]">
@@ -26,18 +39,25 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {erro && (
+        <div className="mb-4 text-[13px] text-status-critical bg-status-critical/10 border border-status-critical/30 rounded-lg px-4 py-3">
+          Não foi possível carregar os indicadores: {erro}
+        </div>
+      )}
+
       <div className="grid grid-cols-5 gap-3.5 mb-[18px]">
-        <KpiCard icon={IconDoc} iconColor="#6fa8f5" value={42} label="Demandas abertas" />
-        <KpiCard icon={IconClock} iconColor="#3ecbc0" value={67} label="Recebidas (30d)" />
-        <KpiCard icon={IconCheck} iconColor="#3ecbc0" value={58} label="Concluídas (30d)" />
-        <KpiCard icon={IconSlaClock} iconColor="#3ecbc0" value="84%" valueColor="#3ecbc0" label="Dentro do SLA" />
-        <KpiCard icon={IconWarning} iconColor="#e8536b" value={6} valueColor="#e8536b" label="SLA vencido" />
+        <KpiCard icon={IconDoc} iconColor="#6fa8f5" value={stats ? stats.abertas : "–"} label="Demandas abertas" />
+        <KpiCard icon={IconClock} iconColor="#3ecbc0" value={stats ? stats.recebidas30d : "–"} label="Recebidas (30d)" />
+        <KpiCard icon={IconCheck} iconColor="#3ecbc0" value={stats ? stats.concluidas30d : "–"} label="Concluídas (30d)" />
+        <KpiCard icon={IconSlaClock} iconColor="#3ecbc0" value="—" valueColor="#3ecbc0" label="Dentro do SLA (em breve)" />
+        <KpiCard icon={IconWarning} iconColor="#e8536b" value="—" valueColor="#e8536b" label="SLA vencido (em breve)" />
       </div>
 
       <div className="grid grid-cols-[1.3fr_1fr] gap-3.5 mb-3.5">
         <div className="card p-5">
           <div className="text-[13px] font-bold text-white mb-4">Demandas por categoria</div>
           <div className="flex flex-col gap-2.5">
+            {categoriaBreakdown.length === 0 && <div className="text-xs text-subtle">Nenhuma demanda registrada ainda.</div>}
             {categoriaBreakdown.map((c) => (
               <div key={c.label} className="flex items-center gap-2.5 text-[11.5px]">
                 <div className="w-[84px] text-muted">{c.label}</div>
