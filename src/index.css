@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #0e131a;
+  color: #e9edf1;
+  font-family: "Work Sans", system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+}
+
+::placeholder {
+  color: #4a5563;
+}
+
+@layer components {
+  .card {
+    @apply bg-card border border-border rounded-xl2;
+  }
+
+  .field {
+    @apply w-full px-3 py-2.5 border border-borderStrong rounded-lg bg-field box-border text-sm text-ink;
+  }
+
+  .field-label {
+    @apply block text-xs font-semibold mb-1.5 text-[#aab2bc];
+  }
+
+  .navlink {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted transition-colors;
+  }
+
+  .navlink:hover {
+    @apply bg-white/5 text-ink;
+  }
+
+  .navlink.active {
+    @apply bg-brand-teal/10 text-brand-tealLight font-semibold;
+  }
+
+  .navlink.active:hover {
+    @apply bg-brand-teal/10;
+  }
+
+  .btn-primary {
+    @apply bg-brand-teal text-[#06120e] font-bold text-sm px-5 py-2.5 rounded-lg inline-flex items-center gap-2;
+  }
+
+  .btn-secondary {
+    @apply border border-borderStrong text-[#aab2bc] font-medium text-sm px-4 py-2.5 rounded-lg bg-transparent;
+  }
+}
